@@ -24,6 +24,7 @@ MagneticLockAccessory.prototype.monitorLockState = function() {
   var state = this.gpioRead();
   this.log('Monitoring state, found: ' + state);
   this.currentLockState.setValue(state);
+  setTimeout(this.monitorLockState.bind(this), this.lockPollInMs);
 }
 
 MagneticLockAccessory.prototype.initService = function() {

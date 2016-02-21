@@ -22,13 +22,12 @@ function MagneticLockAccessory(log, config) {
 
 MagneticLockAccessory.prototype.monitorLockState = function() {
   var state = this.gpioRead();
-  this.log('Monitoring state, found: ' + state);
   this.currentLockState.setValue(state);
   setTimeout(this.monitorLockState.bind(this), this.lockPollInMs);
 }
 
 MagneticLockAccessory.prototype.initService = function() {
-  this.magneticLock = new Service.LockMechanism(this.name, this.name);
+  this.magneticLock = new Service.LockMechanism(this.name);
   this.currentLockState = this.magneticLock
     .getCharacteristic(Characteristic.LockCurrentState)
   this.currentLockState.on('get', this.getState.bind(this));
@@ -38,11 +37,6 @@ MagneticLockAccessory.prototype.initService = function() {
     .on('set', this.setState.bind(this));
   this.currentLockState.setValue(Characteristic.LockCurrentState.SECURED);
   this.targetLockState.setValue(Characteristic.LockCurrentState.SECURED);
-  this.infoService = new Service.AccessoryInformation();
-  this.infoService
-    .setCharacteristic(Characteristic.Manufacturer, 'Opensource Community')
-    .setCharacteristic(Characteristic.Model, 'GPIO Magnetic Lock')
-    .setCharacteristic(Characteristic.SerialNumber, 'Version 0.0.1');
 }
 
 MagneticLockAccessory.prototype.gpioWrite = function(value) {
@@ -64,6 +58,7 @@ MagneticLockAccessory.prototype.setState = function(state, callback) {
     case Characteristic.LockCurrentState.UNSECURED:
       this.gpioWrite(state);
       setTimeout(function() {
+        this.log('Automatically setting state to ' + Characteristic.LockCurrentState.SECURED);
         this.targetLockState.setValue(Characteristic.LockCurrentState.SECURED);
         this.currentLockState.setValue(Characteristic.LockCurrentState.SECURED);
       }.bind(this), this.unlockDuration * 1000);

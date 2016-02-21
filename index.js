@@ -12,11 +12,23 @@ function MagneticLockAccessory(log, config) {
   this.name = config['name'];
   this.lockSwitchPin = config['lockSwitchPin'];
   this.unlockDuration = config['unlockDuration'];
-  this.service = new Service.LockMechanism(this.name);
-  this.service
+  log('Lock Switch Pin: ' + this.lockSwitchPin);
+  log('Unlock Duration in seconds: ' + this.unlockDuration);
+  log('Lock poll in ms: ' + this.lockPollInMs);
+  this.initService();
+  setTimeout(this.monitorLockState.bind(this), this.lockPollInMs);
+}
+
+MagneticLockAccessory.prototype.monitorLockState = function() {
+  this.currentLockState.setValue(this.gpioRead());
+}
+
+MagneticLockAccessory.prototype.initService = function() {
+  this.magneticLock = new Service.LockMechanism(this.name, this.name);
+  this.currentLockState = this.magneticLock
     .getCharacteristic(Characteristic.LockCurrentState)
-    .on('get', this.getState.bind(this));
-  this.service
+  this.currentLockState.on('get', this.getState.bind(this));
+  this.magneticLock
     .getCharacteristic(Characteristic.LockTargetState)
     .on('get', this.getState.bind(this))
     .on('set', this.setState.bind(this));
@@ -48,5 +60,5 @@ MagneticLockAccessory.prototype.setState = function(state, callback) {
 }
 
 MagneticLockAccessory.prototype.getServices = function() {
-  return [this.service];
+  return [this.magneticLock];
 }

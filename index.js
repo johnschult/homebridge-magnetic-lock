@@ -21,7 +21,9 @@ function MagneticLockAccessory(log, config) {
 }
 
 MagneticLockAccessory.prototype.monitorLockState = function() {
-  this.currentLockState.setValue(this.gpioRead());
+  var state = this.gpioRead();
+  log('Monitoring state, found: ' + state);
+  this.currentLockState.setValue(state);
 }
 
 MagneticLockAccessory.prototype.initService = function() {
@@ -61,7 +63,7 @@ MagneticLockAccessory.prototype.setState = function(state, callback) {
     case Characteristic.LockCurrentState.UNSECURED:
       this.gpioWrite(state);
       setTimeout(function() {
-        this.gpioWrite(Characteristic.LockCurrentState.SECURED);
+        this.targetLockState.setValue(Characteristic.LockCurrentState.SECURED);
         this.currentLockState.setValue(Characteristic.LockCurrentState.SECURED);
       }.bind(this), this.unlockDuration * 1000);
       break;

@@ -22,7 +22,7 @@ function MagneticLockAccessory(log, config) {
 
 MagneticLockAccessory.prototype.monitorLockState = function() {
   var state = this.gpioRead();
-  log('Monitoring state, found: ' + state);
+  this.log('Monitoring state, found: ' + state);
   this.currentLockState.setValue(state);
 }
 

@@ -33,7 +33,7 @@ MagneticLockAccessory.prototype.initService = function() {
     .getCharacteristic(Characteristic.LockTargetState)
   this.targetLockState.on('get', this.getState.bind(this))
     .on('set', this.setState.bind(this));
-  this.currentDoorState.setValue(Characteristic.LockCurrentState.SECURED);
+  this.currentLockState.setValue(Characteristic.LockCurrentState.SECURED);
   this.targetLockState.setValue(Characteristic.LockCurrentState.SECURED);
   this.infoService = new Service.AccessoryInformation();
   this.infoService

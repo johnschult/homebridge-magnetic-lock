@@ -12,6 +12,7 @@ function MagneticLockAccessory(log, config) {
   this.name = config['name'];
   this.lockSwitchPin = config['lockSwitchPin'];
   this.unlockDuration = config['unlockDuration'];
+  this.lockPollInMs = config['lockPollInMs'];
   log('Lock Switch Pin: ' + this.lockSwitchPin);
   log('Unlock Duration in seconds: ' + this.unlockDuration);
   log('Lock poll in ms: ' + this.lockPollInMs);

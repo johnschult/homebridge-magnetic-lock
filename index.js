@@ -29,10 +29,12 @@ MagneticLockAccessory.prototype.initService = function() {
   this.currentLockState = this.magneticLock
     .getCharacteristic(Characteristic.LockCurrentState)
   this.currentLockState.on('get', this.getState.bind(this));
-  this.magneticLock
+  this.targetLockState = this.magneticLock
     .getCharacteristic(Characteristic.LockTargetState)
-    .on('get', this.getState.bind(this))
+  this.targetLockState.on('get', this.getState.bind(this))
     .on('set', this.setState.bind(this));
+  this.currentDoorState.setValue(Characteristic.LockCurrentState.SECURED);
+  this.targetLockState.setValue(Characteristic.LockCurrentState.SECURED);
   this.infoService = new Service.AccessoryInformation();
   this.infoService
     .setCharacteristic(Characteristic.Manufacturer, 'Opensource Community')
@@ -55,7 +57,18 @@ MagneticLockAccessory.prototype.getState = function(callback) {
 
 MagneticLockAccessory.prototype.setState = function(state, callback) {
   this.log('Setting state to ' + state);
-  this.gpioWrite(state);
+  switch (state) {
+    case Characteristic.LockCurrentState.UNSECURED:
+      this.gpioWrite(state);
+      setTimeout(function() {
+        this.gpioWrite(Characteristic.LockCurrentState.SECURED);
+        this.currentDoorState.setValue(Characteristic.LockCurrentState.SECURED);
+      }.bind(this), this.unlockDuration * 1000);
+      break;
+    default:
+      this.gpioWrite(state);
+      this.currentDoorState.setValue(state);
+  }
   callback();
   return true;
 }

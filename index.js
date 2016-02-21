@@ -62,12 +62,12 @@ MagneticLockAccessory.prototype.setState = function(state, callback) {
       this.gpioWrite(state);
       setTimeout(function() {
         this.gpioWrite(Characteristic.LockCurrentState.SECURED);
-        this.currentDoorState.setValue(Characteristic.LockCurrentState.SECURED);
+        this.currentLockState.setValue(Characteristic.LockCurrentState.SECURED);
       }.bind(this), this.unlockDuration * 1000);
       break;
     default:
       this.gpioWrite(state);
-      this.currentDoorState.setValue(state);
+      this.currentLockState.setValue(state);
   }
   callback();
   return true;

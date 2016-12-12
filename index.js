@@ -11,10 +11,10 @@ function MagneticLockAccessory(log, config) {
   this.log = log;
   this.name = config['name'];
   this.lockSwitchPin = config['lockSwitchPin'];
-  this.unlockDuration = config['unlockDuration'];
+  this.unlockDurationInSecs = config['unlockDurationInSecs'];
   this.lockPollInMs = config['lockPollInMs'];
   log('Lock Switch Pin: ' + this.lockSwitchPin);
-  log('Unlock Duration in seconds: ' + this.unlockDuration);
+  log('Unlock Duration in seconds: ' + this.unlockDurationInSecs);
   log('Lock poll in ms: ' + this.lockPollInMs);
   this.initService();
   setTimeout(this.monitorLockState.bind(this), this.lockPollInMs);
@@ -61,7 +61,7 @@ MagneticLockAccessory.prototype.setState = function(state, callback) {
         this.log('Automatically setting state to ' + Characteristic.LockCurrentState.SECURED);
         this.targetLockState.setValue(Characteristic.LockCurrentState.SECURED);
         this.currentLockState.setValue(Characteristic.LockCurrentState.SECURED);
-      }.bind(this), this.unlockDuration * 1000);
+      }.bind(this), this.unlockDurationInSecs * 1000);
       break;
     default:
       this.gpioWrite(state);
